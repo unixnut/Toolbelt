@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install wp-cli
+      block:
+        - get_url:
+            url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            dest: /usr/local/lib/wp-cli.phar
+            mode: 0755
+            backup: yes
+          register: phar
+
+        - file:
+            src: /usr/local/lib/wp-cli.phar
+            path: /usr/local/bin/wp
+            state: link
+          register: link
+
+        - get_url:
+            url: https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash
+            dest: /etc/bash_completion.d/wp-cli
+            mode: 0644
+            backup: yes
+          register: bash_completion
+
+      rescue:
+        - file:
+            dest: /usr/local/bin/wp
+            state: absent
+          when:
+            - link is not failed
+            - not link.backup_file
+
+        - file:
+            dest: /usr/local/bin/wp
+            state: file
+            src: "{{ link.backup_file }}"
+            path: /usr/local/bin/wp
+          when:
+            - link.backup_file
+
+        - file:
+            dest: /usr/local/lib/wp-cli.phar
+            state: absent
+          when:
+            - link is failed

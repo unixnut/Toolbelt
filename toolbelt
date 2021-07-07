@@ -1,0 +1,339 @@
+#! /bin/bash
+# toolbelt (Bourne shell script) -- Install anything
+#
+# Version:   0.2
+# Copyright: (c)2020 Alastair Irvine <alastair@plug.org.au>
+# Keywords:  
+# Notice:    
+# Licence:   This file is released under the GNU General Public License
+#
+# Description:
+#
+# In simple terms, Toolbelt is a high-level provisioning/orchestration tool
+# that stops you having to care as much about the dependencies of your work.
+#
+# Toolbelt can install three major kinds of things:
+#   + A "tool" is a first-order, executable program that can be run from the
+#     command-line.  Toolbelt knows how to find tools and (in many cases) knows
+#     what versions have been installed, and can remove them.
+#     A tool can be installed for the whole system or a given user.
+#   + Projects are custom, individual pieces of work that each reside in a given
+#     directory.  They are based on a "template", which is a starting group of
+#     files and subdirectories (installed by Toolbelt) that is then built on
+#     by the user and (usually) committed to a source control repository.
+#   + "Components" are discrete, 3rd-party group of files and subdirectories
+#     that form part of a project.  They (mostly) differ from project templates
+#     in that they are usually installed into a project after it has already
+#     been started.  They are also used as-is by the project, i.e. not modified
+#     or extended.
+#   + A "rider" is a user-defined set of additional stuff that is installed
+#     whenever a given tool, template or component is installed.  This can
+#     include configuration information, files, extra components, complimentary
+#     tools, etc.
+#
+# Toolbelt proudly uses cookiecutter and language/framework-specific package
+# managers (like pip, npm or Composer) to do much of the heavy lifting.  In
+# many cases Toolbelt's value-add comes from centrally recording things about
+# projects or components.  In general, Toolbelt hopes to add extra security
+# to the installation process where practical.
+#
+# The main philosophy underlying Toolbelt is that you don't need to care what
+# language a tool is written in.  It allows you to break out of the silos you
+# are placed in by various language-specific package managers and just install
+# something without having to remember how, or search for instructions on the
+# World Wide Web.  It is designed to interact sensibly with your OS's package
+# manager, given that uses its package archives unless there is a newer version
+# of a tool available from upstream, in which case it asks you if you want to
+# use that instead.  (Please note that if you do, you are then responsible for
+# your own security updates.)
+#
+# A secondary philosophy is that you have multiple projects and that these will
+# use a variety of project templates and components, which you'll want to
+# manage centrally; Toolbelt does this in an opinionated way that allows a
+# greater focus on security.
+#
+# Internally, Toolbelt refers to "entities" instead of tools, because the
+# former can also consist of dependencies like OS package archives.
+#
+# Usage: 
+# Options:
+#   
+#
+# Licence details:
+#     This program is free software; you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation; either version 2 of the License, or (at
+#     your option) any later version.
+#
+#     See http://www.gnu.org/licenses/gpl-2.0.html for more information.
+#
+#     You can find the complete text of the GPLv2 in the file
+#     /usr/share/common-licenses/GPL-2 on Debian systems.
+#     Or see the file COPYING in the same directory as this program.
+#
+#
+# TO-DO
+#   + 'remove' subcommand
+#   + "gem:" "pip:" etc. prefixes with auto-dependencies
+#   + Record things installed (that aren't OS packages)
+#   + Record dependencies installed
+#   + Check for things before installing
+#   + Detect new versions
+#   + 'upgrade' subcommand (applies to everything installed by default)
+#   + Flag dependencies that are OS packages as automatically installed
+#   + 'tidy' subcommand for removing unused dependencies
+#   + 'stamp' subcommand for creating a project from a well-known template
+#     with cookiecutter (also records an alias for faster use later)
+#   + 'add' subcommand for adding a component to a given project
+#   + 'register' subcommand for recording the location of a given project
+#   + subcommand for surveying components of registered projects for updates
+#   + Jenkins:
+#       - Amazon Linux: https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/#download-and-install-jenkins
+#       - Debian/Ubuntu: https://www.jenkins.io/doc/book/installing/linux/#debianubuntu
+#       - Fedora: https://www.jenkins.io/doc/book/installing/linux/#fedora
+#       - CentOS etc.: https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos
+#
+# More tools
+#   + cookiecutter
+#   + Terraform
+#   + yeoman
+#   + Webmin
+#   + Docker
+#   + Kubernetes
+#   + Apache Mesos
+#   + Vagrant
+#   + Ansible
+#   + Puppet
+#   + Chef
+#   + Salt
+#   + Jenkins
+#   + BuildKite
+#   + Serverless Framework: http://www.serverless.com "npm install serverless -g"
+#   + Azure CLI: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt
+#                https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-yum
+#
+# More templates
+#   + Fat-free Framework (F3)
+#   + Laravel: laravel-lts="composer create-project laravel/laravel $DEST '5.5.*'"
+#              php-pdo php-tokenizer php-xml php-mcrypt php-mbstring
+#   + Symfony
+#   + Yii
+#   + Kohana
+#   + Doctrine
+#   + CakePHP
+#   + Drupal
+#   + Django
+#   + Craft CMS: craft=craft-cms="composer create-project craftcms/craft $DEST"
+#                php-json php-curl php-zip php-imagick php-mcrypt php-mbstring php-pdo
+#
+# More components
+#   + React
+#   + AngularJS
+#   + Bootstrap.js
+#   + jQuery
+#   + ReCaptcha
+#   + Argon2i password hashing algorithm: https://wiki.php.net/rfc/argon2_password_hash
+
+# Note that alias resolution takes place before dependency checks, so
+# dependencies have to belong to the final alias target, not an alias
+
+
+# *** DEFINITIONS ***
+# == settings ==
+SELF=toolbelt
+ALLOWED_OPTIONS=vhqltd
+ALLOWED_LONG_OPTIONS=help,verbose,quiet,target,dest
+
+completions_dir=/etc/bash_completion.d
+# Contains installer_keys/ and other stuff including with the package
+## LIB_DIR=/usr/local/lib/toolbelt
+## LIB_DIR=$(dirname "$0")
+LIB_DIR=$(dirname $(dirname "$0"))/share/toolbelt
+# VAR_DIR and INCLUDE defined in "preparation" section
+
+# == other ==
+declare -A aliases commands dependencies messages
+
+# -- exit codes --
+EXIT_MISC=1
+EXIT_CMDLINE=2
+EXIT_INSTALL_HUH=3
+EXIT_INSTALL_HUH_DISTRO=4
+EXIT_VERIFY_SETUP=5
+EXIT_UNVERIFIED=6
+EXIT_INSECURE_PACKAGE=7
+EXIT_UNIMPLEMENTED=8
+
+
+# *** FUNCTIONS ***
+# -- core functions --
+resolve()
+{
+  local entity d resolved_alias dependency=n command prefix suffix
+
+  if [ "$1" = "-d" ] ; then
+    dependency=y
+    shift
+  fi
+  entity=$1
+
+  # Expand aliases, recursively
+  resolved_alias=:
+  while [ -n "$resolved_alias" ] ; do
+    resolved_alias=${aliases[$entity]}
+    if [ -n "$resolved_alias" ] ; then
+      entity=$resolved_alias
+    fi
+  done
+
+  if [[ $entity = *:* && $entity != meta:* ]] ; then
+    # Deal with distro-specific packages
+    suffix=${entity#*:}
+    prefix=${commands[$DISTRO:]}
+    if [ -n "$prefix" ] ; then
+      command="$prefix $suffix"
+    else
+      echo "Error: Don't know how to install packages under $DISTRO" >&2
+      exit $EXIT_INSTALL_HUH_DISTRO
+    fi
+  else
+    # Deal with general entities, i.e. ones that toolbelt knows how to install
+    command=${commands[$entity]}
+    if [ -z "$command" ] ; then
+      echo "$SELF: Error: Don't know how to install $entity" >&2
+      exit $EXIT_INSTALL_HUH
+    fi
+  fi
+
+  if [ $dependency = n ] ; then
+    echo "* Installing '$1'" >&2
+  fi
+
+  # Resolve dependencies
+  if [ -n "${dependencies[$entity]}" ] ; then
+    for dependency in ${dependencies[$entity]} ; do
+      process -d $dependency >&2
+    done
+  fi
+
+  echo "$command"
+}
+
+
+process()
+{
+  local command exit_code resolve_opts
+
+  if [ "$1" = "-d" ] ; then
+    resolve_opts=-d
+    shift
+  fi
+
+  if command=$(resolve $resolve_opts "$@")
+  then
+    if [ $verbose -ge 1 ] ; then
+      echo "** Running \"$command\"" >&2
+    fi
+    eval "$command"
+    if [ $verbose -ge 1 ] && [ -n "${messages[$1]}"  ] ; then
+      echo "${messages[$1]}" >&2
+    fi
+  else
+    exit $?
+  fi
+}
+
+
+# *** MAINLINE ***
+# == command-line parsing ==
+# -- defaults --
+debug=0
+verbose=1
+dest=/usr/local
+
+# -- option handling --
+set -e
+orthogonal_opts=$(getopt --shell=sh --name=$SELF \
+  --options=+$ALLOWED_OPTIONS --longoptions=$ALLOWED_LONG_OPTIONS -- "$@")
+eval set -- "$orthogonal_opts"
+set +e      # getopt would have already reported the error
+
+while [ x"$1" != x-- ] ; do
+  case "$1" in
+    -d) debug=$((debug + 1)) ;;
+    -t|--target|--dest) dest=$2 ; shift ;;
+    -v|--verbose) verbose=$((verbose + 1)) ;;
+    -h|--help) show_help ; exit ;;
+    -q|--quiet) verbose=$((verbose - 1)) ; exit ;;
+    -l) LIB_DIR=$(dirname "$0") ;;
+    -1) echo "${SELF}: Warning: Blah blah blah feature unsupported" >&2 ;;
+  esac
+  shift     # get rid of option (or if the inner shift already did, get rid of arg)
+done
+shift       # get rid of the "--"
+
+
+# == sanity checking ==
+
+
+# == preparation ==
+set -e
+
+VAR_DIR=/var/lib/toolbelt
+INCLUDE=$LIB_DIR/include
+
+
+. $INCLUDE/context.sh
+. $INCLUDE/general_functions.sh
+. $INCLUDE/verify.sh
+if [ $DISTRO_BASE = RedHat ] ; then
+  . $INCLUDE/redhat.sh
+else
+  . $INCLUDE/debian.sh
+fi
+. $INCLUDE/entities.sh
+
+gpgkey_prep
+
+
+# == processing ==
+case $1 in
+  install|i)
+    setup
+    trap 'cleanup' EXIT INT HUP
+    if [ $# -ge 2 ] ; then
+      shift
+      for entity ; do
+        process $entity
+      done
+      echo "* Done."
+    else
+      echo "$SELF: Error: Empty install subcommand" >&2
+      exit $EXIT_CMDLINE
+    fi
+    ;;
+
+  build|b)
+    ## CMakeLists.txt -> cmake
+    ## .GYP -> https://gyp.gsrc.io/
+    ## Recognise GN and Ninja build files: https://chromium.googlesource.com/chromium/src/tools/gn/
+
+
+    ;;
+
+  package|p)
+    ## CMakeLists.txt -> cpack
+
+    ;;
+
+
+  factory|f)
+    # Output an Ansible playbook to install the package
+    exit $EXIT_UNIMPLEMENTED
+    ;;
+
+  *)
+    echo "$SELF: Error: Unknown subcommand" >&2
+    exit $EXIT_CMDLINE
+    ;;
+esac

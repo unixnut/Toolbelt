@@ -1,0 +1,37 @@
+#! /bin/sh
+# plugins/jenkins (Bourne shell script) -- 
+
+ubuntu_prep()
+{
+  # Import the GPG key for Jenkins repo
+  wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key \
+    | sudo apt-key add -
+  # Add the repo to list of sources
+  echo deb https://pkg.jenkins.io/debian-stable binary/ > \
+    /etc/apt/sources.list.d/jenkins.list
+}
+
+
+ubuntu_install()
+{
+  #Install Jenkins
+  $APT install $APT_OPTIONS jenkins
+
+  # TO-DO: tweak /etc/default/jenkins if ucf/debconf didn't
+}
+
+
+launch()
+{
+  # Read host/port info from /etc/default/jenkins, construct URL and open
+  jenkins_url=
+
+  if first_install ; then
+    echo "Initial password (only works during installation): $(cat /var/lib/jenkins/secrets/initialAdminPassword)"
+  fi
+  sensible-browser $jenkins_url
+  # or echo $jenkins_url
+}
+
+
+$@

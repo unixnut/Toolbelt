@@ -27,7 +27,7 @@ fetch()
     shift
     shift
     ## curl -f -sS -L --output "$file" "$@"
-    wget -N -O "$file" "$@"
+    wget -O "$file" "$@"
   else
     shift
     ## (cd "$dest" ; curl -f -sS -L -O "$@")

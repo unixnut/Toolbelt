@@ -1,3 +1,8 @@
+# Note that $dest, $completions_dir and $SCRIPT_TMPDIR are not set at script parse
+# time, so can't be relied upon here.  Instead, they're evaluated by process().
+# All substitutions evaluated within this file are of variables defined in
+# include/context.sh (or a related file) or elsewhere in this file.
+
 # == Aliases and commands ==
 aliases[awscli]=aws-cli
 aliases[letsencrypt]=certbot-apache
@@ -19,11 +24,18 @@ commands[aws-cli]="pip3 install --upgrade --system awscli"
 dependencies[aws-cli]=pip
 
 aliases[certbot]=certbot-apache
-certbot_dl="fetch /usr/local/sbin https://dl.eff.org/certbot-auto && chmod a+x /usr/local/sbin/certbot-auto && ln -s certbot-auto /usr/local/sbin/certbot"
+certbot_dl="fetch /usr/local/sbin https://dl.eff.org/certbot-auto
+  chmod a+x /usr/local/sbin/certbot-auto
+  ln -s certbot-auto /usr/local/sbin/certbot"
 commands[certbot-apache]=$certbot_dl
 commands[certbot-nginx]=$certbot_dl
 
-commands[mina]="gem install mina"    # http://nadarei.co/mina/
+commands[mina]="gem install mina"
+straplines[mina]="Blazing fast application deployment tool"
+descriptions[mina]="Blazing fast application deployment tool.
+
+By Stjepan Hadjić
+http://nadarei.co/mina/"
 dependencies[mina]=gem
 
 commands[aws-vault]="go get github.com/99designs/aws-vault"
@@ -33,21 +45,53 @@ dependencies[aws-vault]=${DISTRO}:Go
 commands[pushb]="cargo install pushb"
 dependencies[pushb]=${DISTRO}:Rust
 
-commands[wp-cli]="fetch $dest/lib https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-fetch $completions_dir https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash
-chmod a+x $dest/lib/wp-cli.phar && ln -s ../lib/wp-cli.phar $dest/bin/wp"
+commands[wp-cli]="fetch \$dest/lib https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+  fetch \$completions_dir https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash
+  chmod a+x \$dest/lib/wp-cli.phar
+  ln -s ../lib/wp-cli.phar \$dest/bin/wp"
 
-commands[composer]="fetch -o $SCRIPT_TMPDIR/composer-setup.php https://getcomposer.org/installer
-fetch $SCRIPT_TMPDIR https://composer.github.io/installer.sig
-digest_verify $SCRIPT_TMPDIR/composer-setup.php $SCRIPT_TMPDIR/installer.sig
-php $SCRIPT_TMPDIR/composer-setup.php --install-dir=$dest/bin --filename=composer"
+commands[composer]="fetch -o \$SCRIPT_TMPDIR/composer-setup.php https://getcomposer.org/installer
+  fetch \$SCRIPT_TMPDIR https://composer.github.io/installer.sig
+  digest_verify \$SCRIPT_TMPDIR/composer-setup.php \$SCRIPT_TMPDIR/installer.sig
+  php \$SCRIPT_TMPDIR/composer-setup.php --install-dir=\$dest/bin --filename=composer"
 digest_alg[composer]=sha384
+straplines[composer]="A Dependency Manager for PHP"
+descriptions[composer]="Uses composer.json and composer.lock to manage dependencies in the
+same way as Pipenv or Bundler.
+
+By Nils Adermann, Jordi Boggiano
+https://getcomposer.org/ or https://composer.github.io/"
 
 aliases[pwsh]=powershell
 
+aliases[JavaServerRuntime]=$DISTRO:JavaServerRuntime
+aliases[Debian:JavaServerRuntime]=Debian:default-jre-headless
+aliases[Ubuntu:JavaServerRuntime]=Ubuntu:default-jre-headless
+
+straplines[jenkins]="An open source automation server"
+descriptions[jenkins]="Jenkins enables developers around the world to reliably automate their
+development lifecycle processes of all kinds, including build, document, test,
+package, stage, deployment, static analysis and many more.
+
+Jenkins is being widely used in areas of Continous Integration, Continuous
+Delivery, DevOps, and other areas. And it is not only about software, the same
+automation techniques can be applied in other areas like Hardware Engineering,
+Embedded Systems, BioTech, etc.
+
+https://jenkins.io"
+dependencies[jenkins]=JavaServerRuntime
 # Debian/Ubuntu only
 messages[jenkins]="** Default admin password is in /var/lib/jenkins/secrets/initialAdminPassword
    See /etc/default/jenkins for tunable settings."
+
+commands[boring]="gem install boring"
+straplines[boring]="Strip ANSI escape sequences"
+descriptions[boring]="Shake free the shackles of color; resist the tyranny of fun! Easily strips
+ANSI escape sequences.
+
+By Adam Sanderson
+https://github.com/adamsanderson/boring"
+dependencies[boring]=gem
 
 ## commands[]=""
 
@@ -72,24 +116,31 @@ case $OS in
           10|11|12|13)
              commands[certbot-apache]="$APT install $APT_OPTIONS python3-certbot-apache"
              commands[certbot-nginx]="$APT install $APT_OPTIONS python3-certbot-nginx"
-             commands[powershell]="fetch $SCRIPT_TMPDIR https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb && dpkg -i $SCRIPT_TMPDIR/packages-microsoft-prod.deb && $APT update && $APT install $APT_OPTIONS powershell"
+             commands[powershell]="fetch \$SCRIPT_TMPDIR https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb
+  dpkg -i \$SCRIPT_TMPDIR/packages-microsoft-prod.deb
+  $APT update
+  $APT install $APT_OPTIONS powershell"
              ;;
         esac
 
         # 'default-jre-headless' resolves to openjdk-11-jdk-headless in Buster onwards
         # (available in stretch-backports)
-        dependencies[jenkins]=Debian:default-jre-headless
         commands[jenkins]="add_repository_apt -k https://pkg.jenkins.io/debian-stable/jenkins.io.key \
-                                       jenkins https://pkg.jenkins.io/debian-stable - binary/
-            $APT install $APT_OPTIONS jenkins"
+                                       jenkins https://pkg.jenkins.io/debian-stable binary/ -
+  $APT install $APT_OPTIONS jenkins"
         ;;
 
       Ubuntu)
         case $DISTRO_RELEASE_MAJOR.$DISTRO_RELEASE_MINOR in
           14.04|16*|17*)
-            ubuntu_certbot_prep="$APT update && $APT install $APT_OPTIONS software-properties-common && add-apt-repository -y ppa:certbot/certbot && $APT update"
-            commands[certbot-apache]="$ubuntu_certbot_prep && $APT install $APT_OPTIONS python-certbot-apache"
-            commands[certbot-nginx]="$ubuntu_certbot_prep &&  $APT install $APT_OPTIONS python-certbot-nginx"
+            ubuntu_certbot_prep="$APT update
+  $APT install $APT_OPTIONS software-properties-common
+  add-apt-repository -y ppa:certbot/certbot
+  $APT update"
+            commands[certbot-apache]="$ubuntu_certbot_prep
+  $APT install $APT_OPTIONS python-certbot-apache"
+            commands[certbot-nginx]="$ubuntu_certbot_prep
+  $APT install $APT_OPTIONS python-certbot-nginx"
           ;;
 
           18*|19*|[23456789][0-9]*)
@@ -101,10 +152,9 @@ case $OS in
         commands[powershell]="snap install powershell --classic"
 
         # 'default-jre-headless' resolves to openjdk-11-jdk-headless in 20.04 (Xenial) onwards
-        dependencies[jenkins]=Debian:default-jre-headless
         commands[jenkins]="add_repository_apt -k https://pkg.jenkins.io/debian-stable/jenkins.io.key \
-                                       jenkins https://pkg.jenkins.io/debian-stable - binary/
-            $APT install $APT_OPTIONS jenkins"
+                                       jenkins https://pkg.jenkins.io/debian-stable binary/ -
+  $APT install $APT_OPTIONS jenkins"
         ;;
 
       # RedHat and derivatives
@@ -117,12 +167,12 @@ case $OS in
             aliases[certbot-nginx]=${DISTRO}:certbot-nginx
             ;;
         esac
-        commands[powershell]="add_repository_yum -k https://packages.microsoft.com/keys/microsoft.asc \\
+        commands[powershell]="add_repository_yum -k https://packages.microsoft.com/keys/microsoft.asc \
                                       microsoft https://packages.microsoft.com/config/rhel/7/prod.repo
-                                  yum install -y powershell"
-        commands[nodejs]="add_repository_yum -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \\
+  yum install -y powershell"
+        commands[nodejs]="add_repository_yum -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \
                               nodesource-el7 https://rpm.nodesource.com/pub/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
-                          yum install -y nodejs"
+  yum install -y nodejs"
         ;;
 
       Fedora)
@@ -132,12 +182,12 @@ case $OS in
           aliases[certbot-nginx]=Fedora:certbot-nginx
           ;;
         esac
-        commands[powershell]="add_repository_dnf -k https://packages.microsoft.com/keys/microsoft.asc \\
+        commands[powershell]="add_repository_dnf -k https://packages.microsoft.com/keys/microsoft.asc \
                                   microsoft https://packages.microsoft.com/config/rhel/7/prod.repo
-                              dnf install -y powershell"
-        commands[nodejs]="add_repository_dnf -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \\
+  dnf install -y powershell"
+        commands[nodejs]="add_repository_dnf -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \
                               nodesource-el7 https://rpm.nodesource.com/pub/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
-                          dnf install -y nodejs"
+  dnf install -y nodejs"
         ;;
     esac
     ;;

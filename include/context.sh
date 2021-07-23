@@ -97,7 +97,7 @@ fi
 # -- DISTRO_BASE --
 case $DISTRO in
   # EnterpriseEnterpriseServer is Oracle Enterprise Linux (now called Oracle Linux)
-  CentOS|RHEL|Fedora|Amazon|VirtuozzoLinux|EnterpriseEnterpriseServer|\
+  CentOS|RHEL|Fedora|Amazon*|VirtuozzoLinux|EnterpriseEnterpriseServer|\
   Scientific*|XenServer|cloudlinux)
     export DISTRO_BASE=RedHat
     ## export DISTRO_CODENAME=unknown

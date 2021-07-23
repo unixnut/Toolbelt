@@ -4,6 +4,7 @@ APT_OPTIONS=-y
 
 commands[meta:Debian:backports]="add_repository_apt backports $DEBIAN_ARCHIVE_URL main $(lsb_release -cs)-backports"
 commands[Debian:]="$APT install $APT_OPTIONS"
+commands[Ubuntu:]="$APT install $APT_OPTIONS"
 
 
 # Usage: add_repository_apt [ -f ] [ -k <key_url> ] <name> <url> [ <component> [ <dist> ] ]
@@ -27,13 +28,11 @@ add_repository_apt()
     shift
   fi
 
-  local name=$1 url=$2
+  local name=$1 url=$2 component=${3:-main} dist=${4:-$(lsb_release -cs)}
 
   if [ -f /etc/apt/sources.list.d/$name.list ] && [ $force_fetch = n ] ; then
     return 0
   fi
-
-  local name=$1 url=$2 component=${3:-main} dist=${4:-$(lsb_release -cs)}
 
   if [ $dist = - ] ; then
     dist=

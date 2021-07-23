@@ -25,6 +25,7 @@
       - debian.sh
       - context.sh
       - entities.sh
+    tags: include
 
   - name: Install keys
     copy:

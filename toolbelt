@@ -147,12 +147,17 @@ ALLOWED_LONG_OPTIONS=help,verbose,quiet,target,dest
 completions_dir=/etc/bash_completion.d
 # Contains installer_keys/ and other stuff including with the package
 ## LIB_DIR=/usr/local/lib/toolbelt
-## LIB_DIR=$(dirname "$0")
-LIB_DIR=$(dirname $(dirname "$0"))/share/toolbelt
-# VAR_DIR and INCLUDE defined in "preparation" section
+# Dev mode: make a symlink in your path that points to the _toolbelt symlink
+# (Don't use `readlink -f` here or it will resolve both symlinks and evaluate to ".../toolbelt")
+if [ "$(basename "$(readlink "$0")")" = _toolbelt ] ; then
+  LIB_DIR=$(dirname "$(readlink "$0")")
+else
+  LIB_DIR=$(dirname "$(dirname "$0")")/share/toolbelt
+fi
+# VAR_DIR defined in "preparation" section
 
 # == other ==
-declare -A aliases commands dependencies messages
+declare -A aliases commands dependencies messages descriptions straplines
 
 # -- exit codes --
 EXIT_MISC=1
@@ -232,7 +237,10 @@ process()
   if command=$(resolve $resolve_opts "$@")
   then
     if [ $verbose -ge 1 ] ; then
-      echo "** Running \"$command\"" >&2
+      # Indent by 10 more characters (in addition to the standard 2 space indent
+      # for multi-line command strings in include/entities.sh) so the
+      # subsequent lines line up with the first one
+      echo "** Running \"$command\"" | sed '1 !s/^/          /' >&2
     fi
     eval "$command"
     if [ $verbose -ge 1 ] && [ -n "${messages[$1]}"  ] ; then
@@ -246,6 +254,8 @@ process()
 
 # *** MAINLINE ***
 # == command-line parsing ==
+. $LIB_DIR/include/docs.sh
+
 # -- defaults --
 debug=0
 verbose=1
@@ -280,18 +290,16 @@ shift       # get rid of the "--"
 set -e
 
 VAR_DIR=/var/lib/toolbelt
-INCLUDE=$LIB_DIR/include
 
-
-. $INCLUDE/context.sh
-. $INCLUDE/general_functions.sh
-. $INCLUDE/verify.sh
+. $LIB_DIR/include/context.sh
+. $LIB_DIR/include/general_functions.sh
+. $LIB_DIR/include/verify.sh
 if [ $DISTRO_BASE = RedHat ] ; then
-  . $INCLUDE/redhat.sh
+  . $LIB_DIR/include/redhat.sh
 else
-  . $INCLUDE/debian.sh
+  . $LIB_DIR/include/debian.sh
 fi
-. $INCLUDE/entities.sh
+. $LIB_DIR/include/entities.sh
 
 gpgkey_prep
 
@@ -329,6 +337,47 @@ case $1 in
 
   factory|f)
     # Output an Ansible playbook to install the package
+    exit $EXIT_UNIMPLEMENTED
+    ;;
+
+  list-entities)
+    for key in "${!commands[@]}" ; do
+      echo $key
+    done |
+      grep -v : |
+      sort |
+      while read entity ; do
+        printf "%-25s %s\n" "$entity" "${straplines[$entity]}"
+      done
+    ;;
+
+  show)
+    # Show details of an entity
+    if [ $# -ne 2 ] ; then
+      echo "$SELF: Usage: toolbelt show <available-entity>" >&2
+      exit $EXIT_CMDLINE
+    elif [ -n "${commands[$2]}" ] ; then
+      echo "$2: ${straplines[$2]}"
+      # -q suppresses showing the description
+      if [ $verbose -ge 1 ] && [ -n "${descriptions[$2]}" ] ; then
+        echo "
+${descriptions[$2]}"
+      fi
+    else
+      echo "$SELF: Error: Unknown entity $entity" >&2
+    fi
+    ;;
+
+  list-installed)
+    exit $EXIT_UNIMPLEMENTED
+    ;;
+
+  update)
+    # Fetch new entities from toolbelt.unixnut.tech
+    exit $EXIT_UNIMPLEMENTED
+    ;;
+
+  remove)
     exit $EXIT_UNIMPLEMENTED
     ;;
 

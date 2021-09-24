@@ -7,3 +7,13 @@
     
     roles:
       - toolbelt
+
+    tasks:
+      - name: Setup /var/lib/toolbelt
+        file:
+          path: /var/lib/toolbelt
+          state: directory
+
+      - name: Run setup subcommand
+        command:
+          cmd: terraform setup

@@ -168,6 +168,7 @@ EXIT_VERIFY_SETUP=5
 EXIT_UNVERIFIED=6
 EXIT_INSECURE_PACKAGE=7
 EXIT_UNIMPLEMENTED=8
+EXIT_VERIFY_PREP=9
 
 
 # *** FUNCTIONS ***
@@ -379,6 +380,10 @@ ${descriptions[$2]}"
 
   remove)
     exit $EXIT_UNIMPLEMENTED
+    ;;
+
+  setup)
+    gpgkey_setup
     ;;
 
   *)

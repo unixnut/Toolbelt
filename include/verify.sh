@@ -38,6 +38,20 @@ pgp_verify()
 }
 
 
+gpgkey_setup()
+{
+  local file
+
+  if [ ! -d $VAR_DIR ] ; then
+    echo "$SELF: $VAR_DIR missing" >&2
+    exit $EXIT_VERIFY_SETUP
+  fi
+
+  for file in $(ls $LIB_DIR/installer_keys/*.key 2>/dev/null) $(ls $LIB_DIR/installer_keys/*.asc 2>/dev/null) ; do
+    gpg --no-default-keyring --keyring $VAR_DIR/trustedkeys.gpg --import < "$file"
+  done
+}
+
 gpgkey_prep()
 {
   if [ ! -f $VAR_DIR/trustedkeys.gpg ] ; then
@@ -47,6 +61,6 @@ gpgkey_prep()
                   -newer $VAR_DIR/trustedkeys.gpg)" ] ; then
     # Should have run `gpg --no-default-keyring --keyring $VAR_DIR/trustedkeys.gpg --import < ...`
     echo "$SELF: Unimported GPG keys found"
-    exit $EXIT_VERIFY_SETUP
+    exit $EXIT_VERIFY_PREP
   fi
 }

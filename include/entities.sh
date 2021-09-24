@@ -1,9 +1,14 @@
-# Note that $dest, $completions_dir and $SCRIPT_TMPDIR are not set at script parse
-# time, so can't be relied upon here.  Instead, they're evaluated by process().
-# All substitutions evaluated within this file are of variables defined in
-# include/context.sh (or a related file) or elsewhere in this file.
+# Aliases and commands
 
-# == Aliases and commands ==
+# All substitutions evaluated within this file are of variables defined in
+# include/context.sh (or a related file) or the toolbelt script file,
+# before/during command-line parsing.  Expansions of variables defined within
+# this file should be quoted.
+#
+# E.g.: $dest, $completions_dir and $SCRIPT_TMPDIR are available, but the
+# latter should be quoted (to avoid being expanded when the commands are
+# printed) as its value is unimportant to the user.
+
 aliases[awscli]=aws-cli
 aliases[letsencrypt]=certbot-apache
 aliases[certbot]=certbot-apache
@@ -35,7 +40,7 @@ straplines[mina]="Blazing fast application deployment tool"
 descriptions[mina]="Blazing fast application deployment tool.
 
 By Stjepan Hadjić
-http://nadarei.co/mina/"
+https://mina-deploy.github.io/mina/"
 dependencies[mina]=gem
 
 commands[aws-vault]="go get github.com/99designs/aws-vault"
@@ -45,15 +50,15 @@ dependencies[aws-vault]=${DISTRO}:Go
 commands[pushb]="cargo install pushb"
 dependencies[pushb]=${DISTRO}:Rust
 
-commands[wp-cli]="fetch \$dest/lib https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+commands[wp-cli]="fetch $dest/lib https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
   fetch \$completions_dir https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash
-  chmod a+x \$dest/lib/wp-cli.phar
-  ln -s ../lib/wp-cli.phar \$dest/bin/wp"
+  chmod a+x $dest/lib/wp-cli.phar
+  ln -s ../lib/wp-cli.phar $dest/bin/wp"
 
 commands[composer]="fetch -o \$SCRIPT_TMPDIR/composer-setup.php https://getcomposer.org/installer
   fetch \$SCRIPT_TMPDIR https://composer.github.io/installer.sig
   digest_verify \$SCRIPT_TMPDIR/composer-setup.php \$SCRIPT_TMPDIR/installer.sig
-  php \$SCRIPT_TMPDIR/composer-setup.php --install-dir=\$dest/bin --filename=composer"
+  php \$SCRIPT_TMPDIR/composer-setup.php --install-dir=$dest/bin --filename=composer"
 digest_alg[composer]=sha384
 straplines[composer]="A Dependency Manager for PHP"
 descriptions[composer]="Uses composer.json and composer.lock to manage dependencies in the
@@ -192,3 +197,9 @@ case $OS in
     esac
     ;;
 esac
+
+if [ "$(ls $LIB_DIR/include/entities.d)" != entity.sh.template ] ; then
+  for file in $LIB_DIR/include/entities.d/*.sh ; do
+    . "$file"
+  done
+fi

@@ -25,6 +25,7 @@
       - debian.sh
       - context.sh
       - entities.sh
+      - entities.d
     tags: include
 
   - name: Install keys
@@ -33,5 +34,7 @@
       dest: "{{DIST}}/share/toolbelt/installer_keys/"
       mode: 0644
     with_items:
-      - nodesource.pem
+      - nodesource.asc
       - composer.pem
+      - hashicorp.asc
+

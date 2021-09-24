@@ -12,7 +12,7 @@ cleanup()
 }
 
 
-# fetch [ -o <dest_file | <dest_dir> | - ] <url>
+# fetch [ -o <dest_file | <dest_dir> | - ] <url> [...]
 fetch()
 {
   # TO-DO: support curl

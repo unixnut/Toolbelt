@@ -3,7 +3,7 @@
     gather_facts: false
     become: true
     vars:
-      DIST: /usr/local
+      DEST: /usr/local
     
     roles:
       - toolbelt

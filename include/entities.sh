@@ -45,15 +45,17 @@ dependencies[mina]=gem
 
 commands[aws-vault]="go get github.com/99designs/aws-vault"
 dependencies[aws-vault]=${DISTRO}:Go
-
-# https://github.com/pwoolcoc/pushb
+ 
 commands[pushb]="cargo install pushb"
 dependencies[pushb]=${DISTRO}:Rust
+straplines[pushb]="Similar to pushd/popd, except on git branches within a repo"
+descriptions[pushb]=https://github.com/pwoolcoc/pushb
 
 commands[wp-cli]="fetch $dest/lib https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
   fetch \$completions_dir https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash
   chmod a+x $dest/lib/wp-cli.phar
   ln -s ../lib/wp-cli.phar $dest/bin/wp"
+straplines[wp-cli]="WordPress command-line interface"
 
 commands[composer]="fetch -o \$SCRIPT_TMPDIR/composer-setup.php https://getcomposer.org/installer
   fetch \$SCRIPT_TMPDIR https://composer.github.io/installer.sig

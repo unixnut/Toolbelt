@@ -15,6 +15,7 @@ commands[Ubuntu:]="$APT install $APT_OPTIONS"
 add_repository_apt()
 {
   local force_fetch=n
+  local key_str
 
   if [ "$1" = -f ] ; then
     # Force fetch even if done before
@@ -23,7 +24,13 @@ add_repository_apt()
   fi
 
   if [ "$1" = -k ] ; then
-    fetch - $2 | apt-key add -
+    case $2 in
+      */*)   key_str=$(fetch - $2) ;;
+      *.gpg) if [ ! -f /etc/apt/trusted.gpg.d/$2 ] ; then
+                install -m 644 $LIB_DIR/package_keys/$2 /etc/apt/trusted.gpg.d/
+             fi ;;
+      *)     key_str=$(cat $LIB_DIR/package_keys/$2) ;;
+    esac
     shift
     shift
   fi
@@ -32,6 +39,10 @@ add_repository_apt()
 
   if [ -f /etc/apt/sources.list.d/$name.list ] && [ $force_fetch = n ] ; then
     return 0
+  fi
+
+  if [ -n "$key_str" ] ; then
+    echo "$key_str" | apt-key add -
   fi
 
   if [ $dist = - ] ; then

@@ -16,4 +16,4 @@
 
       - name: Run setup subcommand
         command:
-          cmd: terraform setup
+          cmd: toolbelt setup

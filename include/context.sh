@@ -21,7 +21,12 @@ if [ -z "$DISTRO" -o \
   case $OS in
     Linux)
       if [ -f /etc/os-release ] ; then
-        export DISTRO=$(sed -n -e 's/Debian .*/Debian/' -e 's/^NAME="\?\([^"]*\).*/\1/p' /etc/os-release)
+        # Extract ID of "parent" OS and capitalise first letter
+        DISTRO=$(sed -n 's/^ID_LIKE=\(.*\)/\u\1/p' /etc/os-release)
+        if [ -z "$DISTRO" ] ; then
+          DISTRO=$(sed -n -e 's/Debian .*/Debian/' -e 's/^NAME="\?\([^"]*\).*/\1/p' /etc/os-release)
+        fi
+        export DISTRO
         export DISTRO_CODENAME=$(sed -n -e 's/^VERSION_CODENAME="\?\([^"]*\).*/\1/p' /etc/os-release)
         export DISTRO_RELEASE=$(sed -n -e 's/^VERSION_ID="\?\([^"]*\).*/\1/p' /etc/os-release)
       elif [ -f /etc/debian_version ] ; then

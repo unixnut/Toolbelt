@@ -2,7 +2,7 @@
   - name: Install script
     copy:
       src: toolbelt
-      dest: "{{DIST}}/bin"
+      dest: "{{DEST}}/bin"
       mode: 0755
 
   - name: Install directories
@@ -10,14 +10,15 @@
       path: "{{item}}"
       state: directory
     with_items:
-      - "{{DIST}}/share/toolbelt/include"
-      - "{{DIST}}/share/toolbelt/installer_keys"
+      - "{{DEST}}/share/toolbelt/include"
+      - "{{DEST}}/share/toolbelt/installer_keys"
+      - "{{DEST}}/share/toolbelt/package_keys"
 
   - name: Install include files
     copy:
       src: "include/{{item}}"
-      dest: "{{DIST}}/share/toolbelt/include"
-      mode: 0755
+      dest: "{{DEST}}/share/toolbelt/include"
+      mode: 0644
     with_items:
       - verify.sh
       - general_functions.sh
@@ -25,16 +26,32 @@
       - debian.sh
       - context.sh
       - entities.sh
+      - docs.sh
+    tags: include
+
+  - name: Install include directories
+    copy:
+      src: "include/{{item}}"
+      dest: "{{DEST}}/share/toolbelt/include"
+      mode: 0755
+    with_items:
       - entities.d
     tags: include
 
-  - name: Install keys
+  - name: Install keys for installers
     copy:
       src: "installer_keys/{{item}}"
-      dest: "{{DIST}}/share/toolbelt/installer_keys/"
+      dest: "{{DEST}}/share/toolbelt/installer_keys/"
       mode: 0644
     with_items:
       - nodesource.asc
       - composer.pem
       - hashicorp.asc
 
+  - name: Install keys for package managers
+    copy:
+      src: "package_keys/{{item}}"
+      dest: "{{DEST}}/share/toolbelt/package_keys/"
+      mode: 0644
+    with_items:
+      - steam.gpg

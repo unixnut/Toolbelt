@@ -1,11 +1,16 @@
 commands[meta:RHEL:epel]="yum-config-manager --enable rhel-${DISTRO_RELEASE_MAJOR}-server-optional-rpms && yum-config-manager --enable rhel-${DISTRO_RELEASE_MAJOR}-server-extras-rpms && rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 aliases[meta:CentOS:epel]=${DISTRO}:epel-release
 aliases[meta:OracleLinux:epel]=${DISTRO}:epel-release
+commands[meta:AmazonLinux:epel]="amazon-linux-extras install epel -y && rpm --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"
+aliases[epel]=meta:${DISTRO}:epel
 
-commands[RHEL:]="yum install"
-commands[CentOS:]="yum install"
-commands[OracleLinux:]="yum install"
-commands[Fedora:]="dnf install"
+YUM_OPTIONS=-y
+
+commands[RHEL:]="yum install $YUM_OPTIONS"
+commands[CentOS:]="yum install $YUM_OPTIONS"
+commands[OracleLinux:]="yum install $YUM_OPTIONS"
+commands[AmazonLinux:]="yum install $YUM_OPTIONS"
+commands[Fedora:]="dnf install $YUM_OPTIONS"
 
 
 safe_rpm_install()

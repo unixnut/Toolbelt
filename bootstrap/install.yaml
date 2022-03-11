@@ -16,4 +16,4 @@
 
       - name: Run setup subcommand
         command:
-          cmd: toolbelt setup
+          cmd: /usr/local/bin/toolbelt setup

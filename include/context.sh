@@ -21,11 +21,24 @@ if [ -z "$DISTRO" -o \
   case $OS in
     Linux)
       if [ -f /etc/os-release ] ; then
-        # Extract ID of "parent" OS and capitalise first letter
-        DISTRO=$(sed -n 's/^ID_LIKE=\(.*\)/\u\1/p' /etc/os-release)
-        if [ -z "$DISTRO" ] ; then
-          DISTRO=$(sed -n -e 's/Debian .*/Debian/' -e 's/^NAME="\?\([^"]*\).*/\1/p' /etc/os-release)
-        fi
+        # $ID
+        DISTRO="$(sed -n 's/^ID="\?\([^"#*]\+\).*/\1/p' /etc/os-release)"
+        case $DISTRO in
+          amzn) DISTRO=AmazonLinux ;;
+          centos) DISTRO=CentOS ;;
+          fedora) DISTRO=Fedora ;;
+          debian) DISTRO=Debian ;;
+          alpine) DISTRO=Alpine ;;
+          kali) DISTRO=Kali;;
+          sles) DISTRO=SuSE ;;
+          rhel) DISTRO=redhat ;;
+        esac
+        ## DISTRO=$(sed -n -e 's/Debian .*/Debian/' -e 's/^NAME="\?\([^"]*\).*/\1/p' /etc/os-release)
+        ## DISTRO=$(sed -n 's/^ID_LIKE=\(.*\)/\u\1/p' /etc/os-release)
+        case "$(sed -n 's/^ID_LIKE=//p' /etc/os-release)" in
+          *rhel*) export DISTRO_BASE=RedHat ;;
+          *debian*) export DISTRO_BASE=Debian ;;
+        esac
         export DISTRO
         export DISTRO_CODENAME=$(sed -n -e 's/^VERSION_CODENAME="\?\([^"]*\).*/\1/p' /etc/os-release)
         export DISTRO_RELEASE=$(sed -n -e 's/^VERSION_ID="\?\([^"]*\).*/\1/p' /etc/os-release)
@@ -41,10 +54,12 @@ if [ -z "$DISTRO" -o \
           8.*) export DISTRO_CODENAME=jessie ;;
           9.*) export DISTRO_CODENAME=stretch ;;
           10.*) export DISTRO_CODENAME=buster ;;
+          11.*) export DISTRO_CODENAME=bullseye ;;
+          12.*) export DISTRO_CODENAME=bookworm ;;
           *)  # anything else is assumed to be a codename
               # (e.g. /etc/debian_version contents is "blah/sid")
               export DISTRO_CODENAME=$DISTRO_RELEASE
-              export DISTRO_RELEASE=11.0.beta 
+              export DISTRO_RELEASE=13.0.beta
               ;;
         esac
       elif [ -f /etc/redhat-release ] ; then
@@ -59,7 +74,7 @@ if [ -z "$DISTRO" -o \
       elif [ -f /etc/system-release ] ; then
         # this file contains a string like one of the following:
         #   Amazon Linux AMI release 2014.09
-        export DISTRO=`awk 'NR==1 { if (/^Amazon Linux AMI/) print "Amazon"; else print $1; }' /etc/system-release`
+        export DISTRO=`awk 'NR==1 { if (/^Amazon Linux AMI/) print "AmazonLinux"; else print $1; }' /etc/system-release`
         export DISTRO_RELEASE=`awk 'NR==1 { print $(NF); }' /etc/system-release`
       else
         export DISTRO=unknown DISTRO_RELEASE=0

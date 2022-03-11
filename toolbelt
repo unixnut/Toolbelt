@@ -1,7 +1,7 @@
 #! /bin/bash
 # toolbelt (Bourne shell script) -- Install anything
 #
-# Version:   0.2
+# Version:   0.5
 # Copyright: (c)2020 Alastair Irvine <alastair@plug.org.au>
 # Keywords:  
 # Notice:    
@@ -9,7 +9,7 @@
 #
 # Description:
 #
-# In simple terms, Toolbelt is a high-level provisioning/orchestration tool
+# In simple terms, Toolbelt is a mid-level provisioning/orchestration tool
 # that stops you having to care as much about the dependencies of your work.
 #
 # Toolbelt can install three major kinds of things:
@@ -384,6 +384,10 @@ ${descriptions[$2]}"
 
   setup)
     gpgkey_setup
+    ;;
+
+  context)
+    echo "$OS: $DISTRO ($DISTRO_BASE) $DISTRO_RELEASE"
     ;;
 
   *)

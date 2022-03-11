@@ -177,9 +177,22 @@ case $OS in
         commands[powershell]="add_repository_yum -k https://packages.microsoft.com/keys/microsoft.asc \
                                       microsoft https://packages.microsoft.com/config/rhel/7/prod.repo
   yum install -y powershell"
+
+        # -- Node.js --
+        if [ $DISTRO = CentOS ] || [ $DISTRO = redhat ] ; then
+          rel=$DISTRO_RELEASE_MAJOR
+        else
+          rel=7
+        fi
+        # Use LTS (v16.x)
         commands[nodejs]="add_repository_yum -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \
-                              nodesource-el7 https://rpm.nodesource.com/pub/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
+                              nodesource-el$rel https://rpm.nodesource.com/pub_16.x/el/$rel/x86_64/nodesource-release-el$rel-1.noarch.rpm
   yum install -y nodejs"
+        # Disable AppStream's version of Node.js
+        if [ $DISTRO = CentOS ] && [ $DISTRO_RELEASE_MAJOR = 8 ] ; then
+          commands[nodejs]="yum module disable -y nodejs
+  ${commands[nodejs]}"
+        fi
         ;;
 
       Fedora)
@@ -189,11 +202,15 @@ case $OS in
           aliases[certbot-nginx]=Fedora:certbot-nginx
           ;;
         esac
+
         commands[powershell]="add_repository_dnf -k https://packages.microsoft.com/keys/microsoft.asc \
                                   microsoft https://packages.microsoft.com/config/rhel/7/prod.repo
   dnf install -y powershell"
+
+        # -- Node.js --
+        rel=$DISTRO_RELEASE_MAJOR
         commands[nodejs]="add_repository_dnf -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \
-                              nodesource-el7 https://rpm.nodesource.com/pub/el/7/x86_64/nodesource-release-el7-1.noarch.rpm
+                              nodesource-fc$rel https://rpm.nodesource.com/pub/fc/$rel/x86_64/nodesource-release-fc$rel-1.noarch.rpm
   dnf install -y nodejs"
         ;;
     esac

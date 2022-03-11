@@ -140,8 +140,8 @@ fi
 set_distro_ver_vars()
 {
   export DISTRO_RELEASE_MAJOR=$1
-  export DISTRO_RELEASE_MINOR=$2
-  export DISTRO_RELEASE_PL=$3
+  export DISTRO_RELEASE_MINOR=${2:-0}
+  export DISTRO_RELEASE_PL=${3:-0}
 }
 set_distro_ver_vars ${DISTRO_RELEASE//./ }
 unset -f set_distro_ver_vars

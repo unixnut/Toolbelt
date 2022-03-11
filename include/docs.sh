@@ -10,6 +10,7 @@ Usage: toolbelt install <entity>
        toolbelt factory <entity>
        toolbelt list-entities
        toolbelt update
+       toolbelt context
 
 Options:
   -t dir | --target=dir | --dest=dir  Prefix for installed files (default: /usr/local)
@@ -44,6 +45,9 @@ Subcommands:
 
   update
     Fetch new entity recipies from toolbelt.unixnut.tech .
+
+  context
+    Shows the toolbelt version and information about the OS.
 EOT_HELP
 }
 

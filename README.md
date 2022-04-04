@@ -45,7 +45,7 @@ To install an entity and dependencies, run **`toolbelt install <entity>`** .
 For other subcommands (not all of which are implemented yet), run
 **`toolbelt --help`** .
 
-Currently supported software as of v1.1
+Currently supported software as of v0.6
 =======================================
 
   - aws-cli
@@ -60,3 +60,12 @@ Currently supported software as of v1.1
   - pushb (Similar to pushd/popd, except on git branches within a repo)
   - terraform (High-level cloud provisioning tool)
   - wp-cli (WordPress command-line interface)
+  - yarn (Package Manager for Node.js)
+  - nodejs
+
+Future software
+===============
+
+  - serverless
+  - is-http: `npm install -g is-http2-cli` (is-http2 command broken
+    under Debian)

@@ -135,6 +135,11 @@ case $OS in
         commands[jenkins]="add_repository_apt -k https://pkg.jenkins.io/debian-stable/jenkins.io.key \
                                        jenkins https://pkg.jenkins.io/debian-stable binary/ -
   $APT install $APT_OPTIONS jenkins"
+
+        # -- Node.js --
+        commands[nodejs]="add_repository_apt -k https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+                              nodesource https://deb.nodesource.com/node_16.x main $DISTRO_CODENAME
+  $APT install $APT_OPTIONS nodejs"
         ;;
 
       Ubuntu)
@@ -162,6 +167,11 @@ case $OS in
         commands[jenkins]="add_repository_apt -k https://pkg.jenkins.io/debian-stable/jenkins.io.key \
                                        jenkins https://pkg.jenkins.io/debian-stable binary/ -
   $APT install $APT_OPTIONS jenkins"
+
+        # -- Node.js --
+        commands[nodejs]="add_repository_apt -k https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
+                              nodesource https://deb.nodesource.com/node_16.x main $DISTRO_CODENAME
+  $APT install $APT_OPTIONS nodejs"
         ;;
 
       # RedHat and derivatives

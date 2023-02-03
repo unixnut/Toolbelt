@@ -1,4 +1,4 @@
-commands[terraform]="ver=\$(curl -s https://releases.hashicorp.com/terraform/ |
+commands[terraform]="ver=\$(fetch - https://releases.hashicorp.com/terraform/ |
                               sed -n 's@^    <a href=\"/terraform/\\([0-9]\\+\\.[0-9]\\+\\.[0-9]\\+\\)/\".*@\\1@p ; T next ; q; :next')
   release_url=https://releases.hashicorp.com/terraform/\$ver
   sig_url=\$release_url/terraform_\${ver}_SHA256SUMS.72D7468F.sig checksums_url=\$release_url/terraform_\${ver}_SHA256SUMS

@@ -34,3 +34,18 @@ fetch()
     wget -N -P "$dest" "$@"
   fi
 }
+
+
+get_redirect_url()
+{
+  local url
+
+  ## curl -sS --head "$1" | sed -n 's/^location: \([^ ]*\).*/\1/p'
+  url=$(wget -o - --method=HEAD --max-redirect=0 "$1" |
+          sed -n 's/^Location: \([^ ]*\).*/\1/p')
+  if [ -n "$url" ] ; then
+    echo "$url"
+  else
+    return 1
+  fi
+}

@@ -1,1 +1,2 @@
-https://www.perl.com/article/3/2013/3/27/How-to-cleanly-uninstall-a-Perl-module/
+  - https://www.perl.com/article/3/2013/3/27/How-to-cleanly-uninstall-a-Perl-module/
+  - apt-key is deprecated. Manage keyring files in trusted.gpg.d instead

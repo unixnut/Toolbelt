@@ -3,7 +3,7 @@
 export OS=`uname`
 # Before running lsb_release, ensure LSB config files are present to avoid
 # botched output.
-if [ -n "$(type -p lsb-release)" -a \
+if [ -n "$(type -p lsb_release)" -a \
      \( -r /etc/lsb-release -o -d /etc/lsb-release.d/ -o \
         -r /etc/dpkg/origins/default \) ] ; then
   export DISTRO=`lsb_release --id --short | sed 's/ LINUX//'`
@@ -32,6 +32,7 @@ if [ -z "$DISTRO" -o \
           kali) DISTRO=Kali;;
           sles) DISTRO=SuSE ;;
           rhel) DISTRO=redhat ;;
+          ubuntu) DISTRO=Ubuntu ;;
         esac
         ## DISTRO=$(sed -n -e 's/Debian .*/Debian/' -e 's/^NAME="\?\([^"]*\).*/\1/p' /etc/os-release)
         ## DISTRO=$(sed -n 's/^ID_LIKE=\(.*\)/\u\1/p' /etc/os-release)

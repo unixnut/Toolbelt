@@ -69,3 +69,7 @@ Future software
   - serverless
   - is-http: `npm install -g is-http2-cli` (is-http2 command broken
     under Debian)
+
+TO-DO
+=====
+  - On Debian, drop .gpg/.asc files into `/etc/apt/trusted.gpg.d` instead of using **`apt-key`** .

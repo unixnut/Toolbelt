@@ -9,7 +9,6 @@
 # latter should be quoted (to avoid being expanded when the commands are
 # printed) as its value is unimportant to the user.
 
-aliases[awscli]=aws-cli
 aliases[letsencrypt]=certbot-apache
 aliases[certbot]=certbot-apache
 
@@ -24,9 +23,6 @@ aliases[Ubuntu:Rust]=Ubuntu:cargo
 
 # Package name is common across distros
 aliases[gem]=${DISTRO}:rubygems
-
-commands[aws-cli]="pip3 install --upgrade --system awscli"
-dependencies[aws-cli]=pip
 
 aliases[certbot]=certbot-apache
 certbot_dl="fetch /usr/local/sbin https://dl.eff.org/certbot-auto

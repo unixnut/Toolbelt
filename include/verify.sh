@@ -17,7 +17,7 @@ digest_verify()
 {
   ## local foo
   ## set -x
-  [ "$(openssl dgst -${digest_alg[$entity]} "$1" | cut -d' ' -f2)" = "$(cat "$2")" ]
+  [ "$(openssl dgst -${digest_alg[$entity]} '$1' | cut -d' ' -f2)" = "$(cat '$2')" ]
   ## foo=$?
   ## set +x
   ## return $foo
@@ -30,8 +30,17 @@ digest_verify()
 # Usage: pgp_verify <target> <sigfile>
 pgp_verify()
 {
-  if ! output=$(gpgv --keyring $VAR_DIR/trustedkeys.gpg "$2" "$1" 2>&1)
+  if [ $verbose -ge 1 ] ; then
+    echo "*** Verifying that '$1' was signed by a trusted source"
+  fi
+
+  if output=$(gpgv --keyring $VAR_DIR/trustedkeys.gpg "$2" "$1" 2>&1)
   then
+    ## if [ $verbose -ge 1 ] ; then
+    ##   echo ""
+    ## fi
+    :
+  else
     echo "$output" >&2
     echo $EXIT_UNVERIFIED
   fi

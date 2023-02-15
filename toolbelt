@@ -1,7 +1,7 @@
 #! /bin/bash
 # toolbelt (Bourne shell script) -- Install anything
 #
-VERSION=1.2
+VERSION=1.3
 # Copyright: (c)2020 Alastair Irvine <alastair@plug.org.au>
 # Keywords:  
 # Notice:    
@@ -302,7 +302,9 @@ else
 fi
 . $LIB_DIR/include/entities.sh
 
-gpgkey_prep
+if [ "$1" != setup ] ; then
+  gpgkey_prep
+fi
 
 
 # == processing ==

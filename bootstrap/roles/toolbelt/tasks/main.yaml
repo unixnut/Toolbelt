@@ -47,6 +47,7 @@
       - nodesource.asc
       - composer.pem
       - hashicorp.asc
+      - aws.asc
 
   - name: Install keys for package managers
     copy:

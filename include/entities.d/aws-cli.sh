@@ -37,5 +37,6 @@ install_aws_cli()
   else
     echo '*** Running AWS CLI installer'
     $SCRIPT_TMPDIR/aws/install -i $install_dir
+    ln -s $install_dir/v2/current/bin/aws_completer /usr/local/bin
   fi
 }

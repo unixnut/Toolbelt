@@ -3,8 +3,8 @@ APT=apt-get
 APT_OPTIONS=-y
 
 commands[meta:Debian:backports]="add_repository_apt backports $DEBIAN_ARCHIVE_URL main $(lsb_release -cs)-backports"
-commands[Debian:]="$APT install $APT_OPTIONS"
-commands[Ubuntu:]="$APT install $APT_OPTIONS"
+commands[Debian:]=apt_soft_install
+commands[Ubuntu:]=apt_soft_install
 
 
 # Usage: add_repository_apt [ -f ] [ -k <key_url> ] <name> <url> [ <component> [ <dist> ] ]
@@ -51,4 +51,15 @@ add_repository_apt()
 
   echo "deb [arch=amd64] $url $dist $component" > /etc/apt/sources.list.d/$name.list
   $APT update
+}
+
+
+apt_soft_install()
+{
+  # Only run the installer command if at least one package is missing,
+  # i.e. dpkg-query displays an error
+  # Note: due to file descriptor copy semantics; order is correct
+  if [ -n "$(dpkg-query -W "$@" 2>&1 >/dev/null)" ] ; then
+    $APT install $APT_OPTIONS "$@"
+  fi
 }

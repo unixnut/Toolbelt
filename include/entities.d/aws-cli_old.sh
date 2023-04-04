@@ -1,2 +1,2 @@
-commands[aws-cli_old]="pip3 install --upgrade --system awscli"
+commands[aws-cli_old]="pip_install_wrapper --upgrade awscli"
 dependencies[aws-cli_old]=pip

@@ -14,6 +14,7 @@ install_aws_cli()
   local install_dir=$1
   local release_url=https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
   local sig_url=https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig
+  local release_file sig_file
 
   if [ -f /usr/bin/aws ] ; then
     echo 'ERROR: AWS CLI v1 installed (from system package); uninstall before proceeding' >&2
@@ -25,11 +26,18 @@ install_aws_cli()
     return 3
   fi
 
-  fetch $SCRIPT_TMPDIR $release_url $sig_url
-  pgp_verify $SCRIPT_TMPDIR/${release_url##*/} $SCRIPT_TMPDIR/${sig_url##*/}
+  if [ -n "${install_options[--aws-cli-file]}" ] ; then
+    release_file="${install_options[--aws-cli-file]}"
+    sig_file="$release_file.sig"
+  else
+    fetch $SCRIPT_TMPDIR $release_url $sig_url
+    release_file=$SCRIPT_TMPDIR/${release_url##*/}
+    sig_file=$SCRIPT_TMPDIR/${sig_url##*/}
+  fi
+  pgp_verify "$release_file" "$sig_file"
 
-  echo '*** Extracting Archive:' $SCRIPT_TMPDIR/${release_url##*/} ...
-  unzip -q -d $SCRIPT_TMPDIR/ $SCRIPT_TMPDIR/${release_url##*/}
+  echo '*** Extracting Archive:' "$release_file"  ...
+  unzip -q -d $SCRIPT_TMPDIR/ "$release_file"
 
   if [ -d $install_dir ] ; then
     echo '*** Running AWS CLI installer in update mode'

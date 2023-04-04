@@ -1,7 +1,7 @@
 #! /bin/bash
 # toolbelt (Bourne shell script) -- Install anything
 #
-VERSION=1.4.0
+VERSION=1.5.0
 # Copyright: (c)2020 Alastair Irvine <alastair@plug.org.au>
 # Keywords:  
 # Notice:    
@@ -157,13 +157,17 @@ fi
 # VAR_DIR defined in "preparation" section
 
 # == other ==
+# Entity name -> property mappings (orthogonal)
 declare -A aliases commands dependencies messages descriptions straplines
+# Used by handle_install_option()
+declare -A install_options
 
 # -- exit codes --
 EXIT_MISC=1
 EXIT_CMDLINE=2
 EXIT_INSTALL_HUH=3
 EXIT_INSTALL_HUH_DISTRO=4
+EXIT_INSTALL_BADOPT=10
 EXIT_VERIFY_SETUP=5
 EXIT_UNVERIFIED=6
 EXIT_INSECURE_PACKAGE=7
@@ -226,6 +230,24 @@ resolve()
 }
 
 
+# Manage the associative array $install_options
+handle_install_option()
+{
+  local opt arg
+  # Short options can't have values but long options can.
+  # Short options can't be stacked, e.g. -xy
+  case $1 in
+    --*=*) opt=${1%%=*} ; arg=${1#*=} ;;
+    --*)   opt=${1%%=*} ; arg= ;;
+    -*)    opt=$1 ; arg= ;;
+    *)     echo "$SELF: Error: Internal error in handle_install_option()"
+           exit $EXIT_INTERNAL_INSTALLOPT
+           ;;
+  esac
+  install_options[$arg]=$opt
+}
+
+
 process()
 {
   local command exit_code resolve_opts
@@ -261,6 +283,7 @@ process()
 debug=0
 verbose=1
 dest=/usr/local
+CONNECT_TIMEOUT=4
 
 # -- option handling --
 set -e
@@ -312,6 +335,18 @@ case $1 in
   install|i)
     setup
     trap 'cleanup' EXIT INT HUP
+
+    # Pick up options to pass to the install command (not including internal option -d)
+    # Iterate until no arguments left or a non-option argument is found
+    while [ $# -gt 1 ] ; do
+      case "$2" in
+        -d) echo "$SELF: Error: Invalid install option" >&2 ; exit $EXIT_INSTALL_BADOPT ;;
+        -*) handle_install_option "$1" ; shift ;;
+        *)  break ;;
+      esac
+    done
+
+    # Parse entity names
     if [ $# -ge 2 ] ; then
       shift
       for entity ; do

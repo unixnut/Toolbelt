@@ -100,6 +100,8 @@ dependencies[boring]=gem
 
 case $OS in
   Linux)
+    aliases[gnu_tar]=$DISTRO:tar
+
     case $DISTRO in
       Debian)
         aliases[pip]=Debian:python3-pip

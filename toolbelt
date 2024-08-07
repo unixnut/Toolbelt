@@ -1,7 +1,7 @@
 #! /bin/bash
 # toolbelt (Bourne shell script) -- Install anything
 #
-VERSION=1.5.0
+VERSION=1.6.0
 # Copyright: (c)2020 Alastair Irvine <alastair@plug.org.au>
 # Keywords:  
 # Notice:    
@@ -179,12 +179,18 @@ EXIT_VERIFY_PREP=9
 # -- core functions --
 resolve()
 {
-  local entity d resolved_alias dependency=n command prefix suffix
+  local entity d resolved_alias command prefix suffix
+  local opt OPTIND=1 OPTARG dependency=n progress_prefix
 
-  if [ "$1" = "-d" ] ; then
-    dependency=y
-    shift
-  fi
+  while getopts dp: opt "$@"
+  do
+    case $opt in
+      d) dependency=y ;;
+      p) progress_prefix="$OPTARG" ;;
+    esac
+  done
+  shift $((OPTIND-1))   # Keep only arguments
+
   entity=$1
 
   # Expand aliases, recursively
@@ -215,8 +221,9 @@ resolve()
     fi
   fi
 
+  # Show progress message for primary entities
   if [ $dependency = n ] ; then
-    echo "* Installing '$1'" >&2
+    echo "$progress_prefix* Installing '$1'" >&2
   fi
 
   # Resolve dependencies
@@ -248,22 +255,28 @@ handle_install_option()
 }
 
 
+# Resolves and installs an entity
 process()
 {
-  local command exit_code resolve_opts
+  local command exit_code
+  local opt OPTIND=1 OPTARG resolve_opts progress_prefix
 
-  if [ "$1" = "-d" ] ; then
-    resolve_opts=-d
-    shift
-  fi
+  while getopts dp: opt "$@"
+  do
+    case $opt in
+      d) resolve_opts=-d ;;
+      p) progress_prefix="$OPTARG" ;;
+    esac
+  done
+  shift $((OPTIND-1))   # Keep only arguments
 
-  if command=$(resolve $resolve_opts "$@")
+  if command=$(resolve -p "$progress_prefix" $resolve_opts "$@")
   then
     if [ $verbose -ge 1 ] ; then
       # Indent by 10 more characters (in addition to the standard 2 space indent
       # for multi-line command strings in include/entities.sh) so the
       # subsequent lines line up with the first one
-      echo "** Running \"$command\"" | sed '1 !s/^/          /' >&2
+      echo "$progress_prefix** Running \"$command\"" | sed '1 !s/^/          /' >&2
     fi
     eval "$command"
     if [ $verbose -ge 1 ] && [ -n "${messages[$1]}"  ] ; then
@@ -355,6 +368,22 @@ case $1 in
       echo "* Done."
     else
       echo "$SELF: Error: Empty install subcommand" >&2
+      exit $EXIT_CMDLINE
+    fi
+    ;;
+
+  grok|g)
+    . $LIB_DIR/include/grok.sh
+
+    # Parse concept names (a group, an extension or a general description)
+    if [ $# -ge 2 ] ; then
+      shift
+      for concept ; do
+        grok $concept
+      done
+      echo "* Done."
+    else
+      echo "$SELF: Error: Empty grok subcommand" >&2
       exit $EXIT_CMDLINE
     fi
     ;;

@@ -15,7 +15,7 @@ Usage: toolbelt install <entity>
 Options:
   -t dir | --target=dir | --dest=dir  Prefix for installed files (default: /usr/local)
   -v | --verbose                      Increase verbosity (default: level 1)
-  -q | --quiete                       Increase verbosity
+  -q | --quiet                        Decrease verbosity
   -l LIB_DIR                          Location of toolbelt files (default: /usr/local/share/toolbelt)
 
 Subcommands:

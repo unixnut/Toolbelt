@@ -259,28 +259,33 @@ handle_install_option()
 process()
 {
   local command exit_code
-  local opt OPTIND=1 OPTARG resolve_opts progress_prefix
+  local opt OPTIND=1 OPTARG resolve_opts progress_prefix no_act=n
 
-  while getopts dp: opt "$@"
+  while getopts dp:n opt "$@"
   do
     case $opt in
       d) resolve_opts=-d ;;
       p) progress_prefix="$OPTARG" ;;
+      n) no_act=y ;;
     esac
   done
   shift $((OPTIND-1))   # Keep only arguments
 
   if command=$(resolve -p "$progress_prefix" $resolve_opts "$@")
   then
-    if [ $verbose -ge 1 ] ; then
-      # Indent by 10 more characters (in addition to the standard 2 space indent
-      # for multi-line command strings in include/entities.sh) so the
-      # subsequent lines line up with the first one
-      echo "$progress_prefix** Running \"$command\"" | sed '1 !s/^/          /' >&2
-    fi
-    eval "$command"
-    if [ $verbose -ge 1 ] && [ -n "${messages[$1]}"  ] ; then
-      echo "${messages[$1]}" >&2
+    if [ $no_act != y ] ; then
+      if [ $verbose -ge 1 ] ; then
+        # Indent by 10 more characters (in addition to the standard 2 space indent
+        # for multi-line command strings in include/entities.sh) so the
+        # subsequent lines line up with the first one
+        echo "$progress_prefix** Running \"$command\"" | sed '1 !s/^/          /' >&2
+      fi
+      eval "$command"
+      if [ $verbose -ge 1 ] && [ -n "${messages[$1]}"  ] ; then
+        echo "${messages[$1]}" >&2
+      fi
+    else
+      echo "$progress_prefix** Pretending to run \"$command\"" | sed '1 !s/^/          /' >&2
     fi
   else
     exit $?
@@ -372,11 +377,13 @@ case $1 in
     fi
     ;;
 
+  # Handles MIME types or file extensions
   grok|g)
     . $LIB_DIR/include/grok.sh
 
     # Parse concept names (a group, an extension or a general description)
     if [ $# -ge 2 ] ; then
+      # TODO: no_act
       shift
       for concept ; do
         grok $concept
@@ -384,6 +391,23 @@ case $1 in
       echo "* Done."
     else
       echo "$SELF: Error: Empty grok subcommand" >&2
+      exit $EXIT_CMDLINE
+    fi
+    ;;
+
+  # Handles file names
+  identify|what|whatis)
+    . $LIB_DIR/include/grok.sh
+
+    # Parse concept names (a group, an extension or a general description)
+    if [ $# -ge 2 ] ; then
+      shift
+      for file_or_ext ; do
+        identify "$file_or_ext"
+      done
+      echo "* Done."
+    else
+      echo "$SELF: Error: Empty identify subcommand" >&2
       exit $EXIT_CMDLINE
     fi
     ;;
@@ -455,6 +479,9 @@ ${descriptions[$2]}"
   context)
     echo Toolbelt v$VERSION
     echo "$OS: $DISTRO ($DISTRO_BASE) $DISTRO_RELEASE_MAJOR.$DISTRO_RELEASE_MINOR.$DISTRO_RELEASE_PL"
+    if [ $verbose -ge 2 ] ; then
+      echo LIB_DIR=$LIB_DIR VAR_DIR=$VAR_DIR 
+    fi
     ;;
 
   *)

@@ -59,7 +59,7 @@ apt_soft_install()
   # Only run the installer command if at least one package is missing,
   # i.e. dpkg-query displays an error
   # Note: due to file descriptor copy semantics; order is correct
-  if [ -n "$(dpkg-query -W "$@" 2>&1 >/dev/null)" ] ; then
+  if [ -n "$(dpkg -s "$@" 2>&1 >/dev/null)" ] ; then
     $APT install $APT_OPTIONS "$@"
   fi
 }

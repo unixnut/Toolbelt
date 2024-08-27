@@ -24,12 +24,20 @@ concept_aliases[bcpio]=application/x-bcpio
 concept_aliases[cpio]=application/x-cpio
 concept_aliases[sv4cpio]=application/x-sv4cpio
 concept_aliases[xz]=application/x-xz
+concept_aliases[lzma]=application/x-lzma
+concept_aliases[lzip]=application/x-lzip
+concept_aliases[lz]=application/x-lzip
 concept_aliases[7z]=application/x-7z-compressed
-concept_aliases[zoo]=application/x-zoo
-concept_aliases[zip]=application/zip
+concept_aliases[lz4]=application/x-lz4
+concept_aliases[lzop]=application/x-lzop
+concept_aliases[lzo]=application/x-lzop
 concept_aliases[zstd]=application/zstd
 concept_aliases[zst]=application/zstd
-concept_aliases[pgn]=application/vnd.chess-pgn
+concept_aliases[brotli]=application/x-brotli
+concept_aliases[br]=application/x-brotli
+
+concept_aliases[zoo]=application/x-zoo
+concept_aliases[zip]=application/zip
 concept_aliases[sit]=application/x-stuffit
 concept_aliases[sitx]=application/x-stuffit
 concept_aliases[xar]=application/x-xar
@@ -40,14 +48,27 @@ concept_aliases[wim]=application/x-ms-wim
 ## concept_aliases[pp]=  # PowerPacker
 # Note: .z is something else
 concept_aliases[Z]=application/x-compressed
+
 # LZMA2 is used by the XZ file format, and is one of the available compression formats used by 7-Zip
+
 # NSIS (Nullsoft Scriptable Installer System) presumably a .exe file; 7-Zip can decompress
+
+# lzf is a compression/decompression utility written by Stefan Traby <stefan@hello-penguin.com>
+# using liblzf-devel (RedHat) or liblzf-dev (Debian)
+# See GNUmakefile and src/lzf/src/lzf.c in https://github.com/injinj/lzf
+
+# LZRW: ?
+
+# lzo1x: ?
 
 # Simple to complete extension mappings
 concept_aliases[tzst]=tar.zstd
 concept_aliases[tbz2]=tar.bz2
 concept_aliases[txz]=tar.xz
 concept_aliases[tlz]=tar.lz
+concept_aliases[tdz]=tar.dz
+
+concept_aliases[pgn]=application/vnd.chess-pgn
 
 
 # *** FUNCTIONS ***
@@ -86,9 +107,12 @@ decode_concept()
     application/x-gtar-compressed)      name="Compressed GNU Tar Archive" ; entities="gnu_tar gzip" ;;   # 7-Zip can handle
     application/x-lzh)                  name="lzh compression" ; entities=lhasa ;;  # unar and 7-Zip can decompress
     application/x-lzx)                  entities=unar ;;
-    lzma)                               name="lzma compression" ; entities="lzma" ;;  # unar and 7-Zip can decompress
-    lz)                                 name="lz compression" ; entities="lzip" ;;
+    application/x-lzma)                 name="lzma compression" ; entities="lzma" ;;  # unar, xz and 7-Zip can decompress
+    application/x-lzip)                 name="lz LZMA compression" ; entities="lzip" ;;
+    application/x-lz4)                  name="lz4 compression" ; entities=lz4 ;;
+    application/x-lzop)                 name="lzop compression" ; entities=lzop ;;
     dz)                                 name="dictd compression" ; entities="dictzip" ;;  # gzip can decompress
+    application/x-brotli)               name="Brotli compression" ; entities=brotli ;;
     application/x-compressed)           name="UNIX compression" ; entities=compress ;;
     application/x-tar)                  name="Tar Archive" ; entities=tar ;;  # unar can decompress
     application/x-ustar)                entities=pax ;;
@@ -116,7 +140,10 @@ decode_concept()
     tar.bz2)                            name="bzip2 Tar Archive" ; entities="bzip2 tar" ;;
     tar.xz)                             name="xz Tar Archive" ; entities="xz tar" ;;
     tar.lzma)                           name="lzma Tar Archive" ; entities="lzma tar" ;;
-    tar.lz)                             name="lzip Tar Archive" ; entities="lzip tar" ;;
+    tar.lz|tar.lzip)                    name="lzip Tar Archive" ; entities="lzip tar" ;;
+    tar.lz4)                            name="lz4 Tar Archive" ; entities="lz4 tar" ;;
+    tar.br|tar.brotli)                  name="brotli Tar Archive" ; entities="brotli tar" ;;
+    tar.lzo|tar.lzop)                   name="lzop Tar Archive" ; entities="lzop tar" ;;
     application/x-apple-diskimage)      name="Apple disk image" ; entities=7-Zip ;;
     application/x-iso9660-image)        name="ISO-9660 optical disc image" ; entities=7-Zip ;;
     application/x-virtualbox-vhd)       name="VirtualBox Virtual HD image" ; entities=7-Zip ;;

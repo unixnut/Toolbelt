@@ -48,3 +48,15 @@ install_aws_cli()
     ln -s $install_dir/v2/current/bin/aws_completer /usr/local/bin
   fi
 }
+
+
+## commands[sam]=""
+## straplines[sam]="AWS Serverless Application Model"
+## descriptions[sam]="AWS SAM templates provide a short-hand syntax, optimized for defining
+## Infrastructure as Code (IaC) for serverless applications.
+## 
+## https://aws.amazon.com/serverless/sam/"
+## dependencies[sam]=
+## messages[sam]=""
+
+## aliases[]=

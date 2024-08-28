@@ -100,11 +100,8 @@ dependencies[boring]=gem
 
 case $OS in
   Linux)
-    aliases[gnu_tar]=$DISTRO:tar
-
     case $DISTRO in
       Debian)
-        aliases[pip]=Debian:python3-pip
         case $DISTRO_RELEASE_MAJOR in
 ##           8) dependencies[certbot-apache]=meta:Debian:backports
 ##               dependencies[certbot-nginx]=meta:Debian:backports
@@ -118,6 +115,7 @@ case $OS in
              commands[certbot-nginx]="$APT install $APT_OPTIONS python-certbot-nginx -t ${DISTRO_CODENAME}-backports"
              # TO-DO: https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7#debian-9
              ;;
+
           10|11|12|13)
              commands[certbot-apache]="$APT install $APT_OPTIONS python3-certbot-apache"
              commands[certbot-nginx]="$APT install $APT_OPTIONS python3-certbot-nginx"
@@ -176,12 +174,16 @@ case $OS in
       RHEL|CentOS|OracleLinux|AmazonLinux)
         case $DISTRO_RELEASE_MAJOR in
           [789])
+            # Enterprise Linux only
             dependencies[${DISTRO}:certbot-apache]=meta:${DISTRO}:epel
             dependencies[${DISTRO}:certbot-nginx]=meta:${DISTRO}:epel
             aliases[certbot-apache]=${DISTRO}:certbot-apache
             aliases[certbot-nginx]=${DISTRO}:certbot-nginx
             ;;
+
+            # TODO: AmazonLinux
         esac
+
         commands[powershell]="add_repository_yum -k https://packages.microsoft.com/keys/microsoft.asc \
                                       microsoft https://packages.microsoft.com/config/rhel/7/prod.repo
   yum install -y powershell"
@@ -196,6 +198,8 @@ case $OS in
         commands[nodejs]="add_repository_yum -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \
                               nodesource-el$rel https://rpm.nodesource.com/pub_16.x/el/$rel/x86_64/nodesource-release-el$rel-1.noarch.rpm
   yum install -y nodejs"
+
+        # .. Node.js Tweaks ..
         # Disable AppStream's version of Node.js
         if [ $DISTRO = CentOS ] && [ $DISTRO_RELEASE_MAJOR = 8 ] ; then
           commands[nodejs]="yum module disable -y nodejs
@@ -221,6 +225,10 @@ case $OS in
                               nodesource-fc$rel https://rpm.nodesource.com/pub/fc/$rel/x86_64/nodesource-release-fc$rel-1.noarch.rpm
   dnf install -y nodejs"
         ;;
+
+      # See "RedHat and derivatives" above
+      ## AmazonLinux)
+      ##   ;;
     esac
     ;;
 esac

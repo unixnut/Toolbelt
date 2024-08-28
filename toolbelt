@@ -163,6 +163,8 @@ declare -A aliases commands dependencies messages descriptions straplines
 declare -A install_options
 
 # -- exit codes --
+EXIT_OK=0
+EXIT_NOP=0
 EXIT_MISC=1
 EXIT_CMDLINE=2
 EXIT_INSTALL_HUH=3
@@ -173,6 +175,7 @@ EXIT_UNVERIFIED=6
 EXIT_INSECURE_PACKAGE=7
 EXIT_UNIMPLEMENTED=8
 EXIT_VERIFY_PREP=9
+EXIT_PYTHON=15
 
 
 # *** FUNCTIONS ***

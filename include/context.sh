@@ -57,10 +57,11 @@ if [ -z "$DISTRO" -o \
           10.*) export DISTRO_CODENAME=buster ;;
           11.*) export DISTRO_CODENAME=bullseye ;;
           12.*) export DISTRO_CODENAME=bookworm ;;
+          13.*) export DISTRO_CODENAME=trixie ;;
           *)  # anything else is assumed to be a codename
               # (e.g. /etc/debian_version contents is "blah/sid")
               export DISTRO_CODENAME=$DISTRO_RELEASE
-              export DISTRO_RELEASE=13.0.beta
+              export DISTRO_RELEASE=14.0.beta
               ;;
         esac
       elif [ -f /etc/redhat-release ] ; then

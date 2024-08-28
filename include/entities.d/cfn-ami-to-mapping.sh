@@ -3,7 +3,7 @@ straplines[cfn-ami-to-mapping]="cfn-ami-to-mapping"
 descriptions[cfn-ami-to-mapping]="Generate your CloudFormation RegionMap automatically
 
 https://github.com/99stealth/cfn-ami-to-mapping"
-dependencies[cfn-ami-to-mapping]=pip
+dependencies[cfn-ami-to-mapping]=$python_install_entity
 ## messages[]=""
 
 ## aliases[]=

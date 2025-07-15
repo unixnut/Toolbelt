@@ -8,6 +8,7 @@ case $OS in
               python_install_entity=$DISTRO:pipx
               if [ $DISTRO_RELEASE_MAJOR -eq 11 ] ; then
                 # /etc/apt/sources.list.d/backports.list
+                # FIXME: Use `-t backports` with apt
                 dependencies[$DISTRO:pipx]=meta:Debian:backports
               fi
               aliases[pipx]=Debian:pipx

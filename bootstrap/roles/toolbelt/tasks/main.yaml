@@ -9,7 +9,9 @@
     file:
       path: "{{item}}"
       state: directory
+      mode: 0755
     with_items:
+      - "{{DEST}}/share/toolbelt"
       - "{{DEST}}/share/toolbelt/include"
       - "{{DEST}}/share/toolbelt/installer_keys"
       - "{{DEST}}/share/toolbelt/package_keys"

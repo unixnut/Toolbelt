@@ -175,6 +175,7 @@ EXIT_UNVERIFIED=6
 EXIT_INSECURE_PACKAGE=7
 EXIT_UNIMPLEMENTED=8
 EXIT_VERIFY_PREP=9
+EXIT_BAD_URL=11
 EXIT_PYTHON=15
 
 
@@ -243,10 +244,12 @@ resolve()
 # Manage the associative array $install_options
 handle_install_option()
 {
+  ## echo ": $1"
   local opt arg
   # Short options can't have values but long options can.
   # Short options can't be stacked, e.g. -xy
   case $1 in
+    -f)    opt=--force ; arg= ;;
     --*=*) opt=${1%%=*} ; arg=${1#*=} ;;
     --*)   opt=${1%%=*} ; arg= ;;
     -*)    opt=$1 ; arg= ;;
@@ -254,7 +257,8 @@ handle_install_option()
            exit $EXIT_INTERNAL_INSTALLOPT
            ;;
   esac
-  install_options[$arg]=$opt
+  install_options[$opt]=$arg
+  ## echo ${#install_options[@]}
 }
 
 
@@ -362,7 +366,7 @@ case $1 in
     while [ $# -gt 1 ] ; do
       case "$2" in
         -d) echo "$SELF: Error: Invalid install option" >&2 ; exit $EXIT_INSTALL_BADOPT ;;
-        -*) handle_install_option "$1" ; shift ;;
+        -*) handle_install_option "$2" ; shift ;;
         *)  break ;;
       esac
     done

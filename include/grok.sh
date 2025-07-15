@@ -148,6 +148,7 @@ decode_concept()
     application/x-iso9660-image)        name="ISO-9660 optical disc image" ; entities=7-Zip ;;
     application/x-virtualbox-vhd)       name="VirtualBox Virtual HD image" ; entities=7-Zip ;;
     application/vnd.chess-pgn)          name="Portable Game Notation (PGN) chess game file" ; entities=pgn-extract ;;
+    application/vnd.ms-word.document*)  name="Microsoft Word Document" ; entities=libreoffice ;; # Includes application/vnd.ms-word.document.macroEnabled.12
     *)
       return 1
       ;;

@@ -6,6 +6,21 @@ commands[meta:Debian:backports]="add_repository_apt backports $DEBIAN_ARCHIVE_UR
 commands[Debian:]=apt_soft_install
 commands[Ubuntu:]=apt_soft_install
 
+add_key_apt()
+{
+  local filename=${1##*/}
+
+  case $1 in
+      *.gpg) if [ ! -f /etc/apt/trusted.gpg.d/$filename ] ; then
+                fetch /etc/apt/trusted.gpg.d/ "$1"
+             fi
+             ;;
+      *)     echo "$SELF: Error: Unsupported URL"
+             exit $EXIT_BAD_URL
+             ;;
+  esac
+}
+
 
 # Usage: add_repository_apt [ -f ] [ -k <key_url> ] <name> <url> [ <component> [ <dist> ] ]
 #

@@ -20,7 +20,7 @@ aliases[shepherd]=cloud-shepherd
 
 
 # colorls
-commands[colorls]="pip_install_wrapper colorls"
+commands[colorls]="pip_install_wrapper \${install_options[--force]+--force} colorls"
 straplines[colorls]="c*ls commands that use colour and pipe output to less"
 descriptions[colorls]="Commands: cls, clls, cllls, cals, calls, callls, csls, cslls,
  csllls, csals, csalls, csallls
@@ -59,3 +59,10 @@ dependencies[text-justifier]=$python_install_entity
 
 aliases[justifier]=text-justifier
 aliases[justify]=text-justifier
+
+
+## commands[userlist]=""
+## straplines[]=""
+## descriptions[]=""
+## dependencies[]=
+## messages[]=""

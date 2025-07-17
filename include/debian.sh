@@ -11,13 +11,13 @@ add_key_apt()
   local filename=${1##*/}
 
   case $1 in
-      *.gpg) if [ ! -f /etc/apt/trusted.gpg.d/$filename ] ; then
-                fetch /etc/apt/trusted.gpg.d/ "$1"
-             fi
-             ;;
-      *)     echo "$SELF: Error: Unsupported URL"
-             exit $EXIT_BAD_URL
-             ;;
+      *.gpg|*.asc) if [ ! -f /etc/apt/trusted.gpg.d/$filename ] ; then
+                     fetch /etc/apt/trusted.gpg.d/ "$1"
+                  fi
+                  ;;
+      *)          echo "$SELF: Error: Unsupported URL"
+                  exit $EXIT_BAD_URL
+                  ;;
   esac
 }
 

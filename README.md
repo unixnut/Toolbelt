@@ -54,10 +54,12 @@ Some of these are currently only available on Debian/Ubuntu/Mint.
   - aws-vault
   - azure-cli
   - [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
+  - [bincalc](https://pypi.org/project/bincalc)
   - boring (Strip ANSI escape sequences)
   - certbot-apache
   - certbot-nginx
   - cloudflare-go a.k.a. flarectl
+  - [colorls](https://pypi.org/project/colorls)
   - Composer (A Dependency Manager for PHP)
   - [fileprune](https://www.spinellis.gr/sw/unix/fileprune/)
   - Jenkins (An open source automation server)
@@ -68,12 +70,14 @@ Some of these are currently only available on Debian/Ubuntu/Mint.
   - pipx for Python
   - pman for PHP
   - PowerShell
+  - [Postfix-tools](https://pypi.org/project/Postfix-tools)
   - [Proxmox Backup Server](https://proxmox.com/en/products/proxmox-backup-server/overview)
   - pushb (Similar to pushd/popd, except on git branches within a repo)
   - pv (pipeview tool for CLI)
   - [serverless](https://www.serverless.com/)
   - [Steam software distribution service](http://www.steampowered.com/)
   - Terraform (High-level cloud provisioning tool)
+  - [text-justifier](https://pypi.org/project/text-justifier)
   - wp-cli (WordPress command-line interface)
   - [yaml-lint](https://github.com/rasshofer/yaml-lint)
   - yarn (Package Manager for Node.js)

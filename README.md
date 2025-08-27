@@ -45,28 +45,71 @@ To install an entity and dependencies, run **`toolbelt install <entity>`** .
 For other subcommands (not all of which are implemented yet), run
 **`toolbelt --help`** .
 
-Currently supported software as of v0.6
-=======================================
+Currently supported software as of v1.7.0
+=========================================
+
+Some of these are currently only available on Debian/Ubuntu/Mint.
 
   - aws-cli
   - aws-vault
   - boring (Strip ANSI escape sequences)
   - certbot-apache
   - certbot-nginx
-  - composer (A Dependency Manager for PHP)
-  - jenkins (An open source automation server)
+  - Composer (A Dependency Manager for PHP)
+  - Jenkins (An open source automation server)
   - mina (Blazing fast application deployment tool)
-  - powershell
+  - PowerShell
   - pushb (Similar to pushd/popd, except on git branches within a repo)
-  - terraform (High-level cloud provisioning tool)
+  - Terraform (High-level cloud provisioning tool)
   - wp-cli (WordPress command-line interface)
   - yarn (Package Manager for Node.js)
-  - nodejs
+  - NodeJS
+  - [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
+  - [fileprune](https://www.spinellis.gr/sw/unix/fileprune/)
+  - [serverless](https://www.serverless.com/)
+  - azure-cli
+  - cloudflare-go a.k.a. flarectl
+  - [Proxmox Backup Server](https://proxmox.com/en/products/proxmox-backup-server/overview)
+  - pipx for Python
+  - pv (pipeview tool for CLI)
+  - [Mozilla SeaMonkey](https://seamonkey-project.org/)
+  - [Steam software distribution service](http://www.steampowered.com/)
+  - [yaml-lint](https://github.com/rasshofer/yaml-lint)
+  - compression tools
+      - 7-Zip
+      - arj
+      - binutils
+      - brotli
+      - bzip2
+      - cabextract
+      - compress
+      - cpio
+      - dictzip
+      - gzip
+      - lhasa
+      - lunzip
+      - lz4
+      - lzip
+      - lzma
+      - lzop
+      - macutils
+      - p7zip-rar
+      - pax
+      - pbzip2
+      - pigz
+      - pixz
+      - tar
+      - unar
+      - unrar
+      - xz
+      - zip/unzip
+      - zstandard
+  - pgn-extract (for chess notation)
+  - pman for PHP
 
 Future software
 ===============
 
-  - serverless
   - is-http: `npm install -g is-http2-cli` (is-http2 command broken
     under Debian)
 

@@ -1,7 +1,7 @@
 #! /bin/bash
 # toolbelt (Bourne shell script) -- Install anything
 #
-VERSION=1.6.0
+VERSION=1.7.0
 # Copyright: (c)2020 Alastair Irvine <alastair@plug.org.au>
 # Keywords:  
 # Notice:    
@@ -141,8 +141,8 @@ VERSION=1.6.0
 # *** DEFINITIONS ***
 # == settings ==
 SELF=toolbelt
-ALLOWED_OPTIONS=vhqltd
-ALLOWED_LONG_OPTIONS=help,verbose,quiet,target,dest
+ALLOWED_OPTIONS=vhqltdV
+ALLOWED_LONG_OPTIONS=help,verbose,quiet,target,dest,version
 
 completions_dir=/etc/bash_completion.d
 # Contains installer_keys/ and other stuff including with the package
@@ -322,6 +322,7 @@ while [ x"$1" != x-- ] ; do
     -d) debug=$((debug + 1)) ;;
     -t|--target|--dest) dest=$2 ; shift ;;
     -v|--verbose) verbose=$((verbose + 1)) ;;
+    -V|--version) echo Toolbelt v$VERSION ; exit ;;
     -h|--help) show_help ; exit ;;
     -q|--quiet) verbose=$((verbose - 1)) ; exit ;;
     -l) LIB_DIR=$(dirname "$0") ;;

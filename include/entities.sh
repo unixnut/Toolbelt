@@ -134,7 +134,7 @@ case $OS in
 
         # -- Node.js --
         commands[nodejs]="add_repository_apt -k https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
-                              nodesource https://deb.nodesource.com/node_16.x main $DISTRO_CODENAME
+                              nodesource https://deb.nodesource.com/node_22.x main $DISTRO_CODENAME
   $APT install $APT_OPTIONS nodejs"
         ;;
 
@@ -166,7 +166,7 @@ case $OS in
 
         # -- Node.js --
         commands[nodejs]="add_repository_apt -k https://deb.nodesource.com/gpgkey/nodesource.gpg.key \
-                              nodesource https://deb.nodesource.com/node_16.x main $DISTRO_CODENAME
+                              nodesource https://deb.nodesource.com/node_22.x main $DISTRO_CODENAME
   $APT install $APT_OPTIONS nodejs"
         ;;
 
@@ -194,9 +194,9 @@ case $OS in
         else
           rel=7
         fi
-        # Use LTS (v16.x)
+        # Use LTS (v22.x)
         commands[nodejs]="add_repository_yum -k https://rpm.nodesource.com/pub/el/NODESOURCE-GPG-SIGNING-KEY-EL \
-                              nodesource-el$rel https://rpm.nodesource.com/pub_16.x/el/$rel/x86_64/nodesource-release-el$rel-1.noarch.rpm
+                              nodesource-el$rel https://rpm.nodesource.com/pub_22.x/el/$rel/x86_64/nodesource-release-el$rel-1.noarch.rpm
   yum install -y nodejs"
 
         # .. Node.js Tweaks ..

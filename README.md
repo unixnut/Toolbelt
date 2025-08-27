@@ -52,30 +52,32 @@ Some of these are currently only available on Debian/Ubuntu/Mint.
 
   - aws-cli
   - aws-vault
+  - azure-cli
+  - [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
   - boring (Strip ANSI escape sequences)
   - certbot-apache
   - certbot-nginx
+  - cloudflare-go a.k.a. flarectl
   - Composer (A Dependency Manager for PHP)
+  - [fileprune](https://www.spinellis.gr/sw/unix/fileprune/)
   - Jenkins (An open source automation server)
   - mina (Blazing fast application deployment tool)
+  - [Mozilla SeaMonkey](https://seamonkey-project.org/)
+  - NodeJS
+  - pgn-extract (for chess notation)
+  - pipx for Python
+  - pman for PHP
   - PowerShell
+  - [Proxmox Backup Server](https://proxmox.com/en/products/proxmox-backup-server/overview)
   - pushb (Similar to pushd/popd, except on git branches within a repo)
+  - pv (pipeview tool for CLI)
+  - [serverless](https://www.serverless.com/)
+  - [Steam software distribution service](http://www.steampowered.com/)
   - Terraform (High-level cloud provisioning tool)
   - wp-cli (WordPress command-line interface)
-  - yarn (Package Manager for Node.js)
-  - NodeJS
-  - [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
-  - [fileprune](https://www.spinellis.gr/sw/unix/fileprune/)
-  - [serverless](https://www.serverless.com/)
-  - azure-cli
-  - cloudflare-go a.k.a. flarectl
-  - [Proxmox Backup Server](https://proxmox.com/en/products/proxmox-backup-server/overview)
-  - pipx for Python
-  - pv (pipeview tool for CLI)
-  - [Mozilla SeaMonkey](https://seamonkey-project.org/)
-  - [Steam software distribution service](http://www.steampowered.com/)
   - [yaml-lint](https://github.com/rasshofer/yaml-lint)
-  - compression tools
+  - yarn (Package Manager for Node.js)
+  - compression tools:
       - 7-Zip
       - arj
       - binutils
@@ -104,8 +106,6 @@ Some of these are currently only available on Debian/Ubuntu/Mint.
       - xz
       - zip/unzip
       - zstandard
-  - pgn-extract (for chess notation)
-  - pman for PHP
 
 Future software
 ===============
